@@ -1,12 +1,12 @@
 <pre class='metadata'>
-Title: Expect-No-Embedded-Resources
-Shortname: Expect-No-Embedded-Resources
+Title: expect-no-embedded-resources
+Shortname: expect-no-embedded-resources
 Level: None
 Status: w3c/UD
 Repository: explainers-by-googlers/expect-no-embedded-resources
 URL: https://explainers-by-googlers.github.io/expect-no-embedded-resources
 Editor: Alex N. Jose, Google LLC https://google.com, alexnj@google.com
-Abstract: The `Expect-No-Embedded-Resources` <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in [[!document-policy|Document Policy]] allows a developer to hint the user agent to optimize loading behavior assuming the HTML response has no resources embedded within its markup.
+Abstract: The `expect-no-embedded-resources` <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in [[!document-policy|Document Policy]] allows a developer to hint the user agent to optimize loading behavior assuming the HTML response has no resources embedded within its markup.
 Markup Shorthands: markdown yes, css no
 Complain About: accidental-2119 yes, missing-example-ids yes
 Assume Explicit For: yes
@@ -19,21 +19,21 @@ Include Can I Use Panels: yes
 
 # Introduction # {#introduction}
 
-A document can hint the user agent that its HTML markup has no resources embedded to allow the user agent to better optimize the loading sequence, such as not using the default speculative parsing behavior, by using the `Expect-No-Embedded-Resources` <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in [[!document-policy|Document Policy]].
+A document can hint the user agent that its HTML markup has no resources embedded to allow the user agent to better optimize the loading sequence, such as not using the default speculative parsing behavior, by using the `expect-no-embedded-resources` <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in [[!document-policy|Document Policy]].
 
 The consequence of using this header may be that a user agent would skip certain optimizations such as the Document's [active speculative HTML parser](https://html.spec.whatwg.org/multipage/parsing.html#active-speculative-html-parser) that attempts to find resources embedded in HTML.
 
 # Document-Policy Integration # {#document-policy-integration}
 
 This specification defines a <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a>
-in [[!document-policy|Document Policy]] with name "Expect-No-Embedded-Resources". Its
+in [[!document-policy|Document Policy]] with name "expect-no-embedded-resources". Its
 <a href="https://wicg.github.io/document-policy#configuration-point-type">type</a> is `boolean`
 with <a href="https://wicg.github.io/document-policy#configuration-point-default-value">default value</a>
 `false`.
 
 <div class='example'>
   ```
-  Document-Policy: Expect-No-Embedded-Resources
+  Document-Policy: expect-no-embedded-resources
   ```
 </div>
 
@@ -42,4 +42,4 @@ with <a href="https://wicg.github.io/document-policy#configuration-point-default
 
 1. Insert a step after step 1 of [start the speculative HTML parser](https://html.spec.whatwg.org/#start-the-speculative-html-parser) as following:
 
-    1. <a href="https://wicg.github.io/document-policy#algo-get-policy-value">Get the document policy value</a> of the "Expect-No-Embedded-Resources" <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> for the [=/Document=]. If the result is `true`, then the user agent may return.
+    1. <a href="https://wicg.github.io/document-policy#algo-get-policy-value">Get the document policy value</a> of the "expect-no-embedded-resources" <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> for the [=/Document=]. If the result is `true`, then the user agent may return.

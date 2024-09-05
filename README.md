@@ -1,6 +1,6 @@
-# `Expect-No-Embedded-Resources` explainer
+# `expect-no-embedded-resources` explainer
 
-The `Expect-No-Embedded-Resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) allows a document to hint to the user agent to better optimize its loading sequence, such as not using the default speculative parsing behavior.
+The `expect-no-embedded-resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) allows a document to hint to the user agent to better optimize its loading sequence, such as not using the default speculative parsing behavior.
 
 ## Participate
 - https://github.com/explainers-by-googlers/expect-no-embedded-resources/issues
@@ -11,7 +11,7 @@ The `Expect-No-Embedded-Resources` [configuration point](https://wicg.github.io/
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [`Expect-No-Embedded-Resources` explainer](#expect-no-embedded-resources-explainer)
+- [`expect-no-embedded-resources` explainer](#expect-no-embedded-resources-explainer)
   - [Participate](#participate)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
@@ -34,20 +34,19 @@ User Agents have implemented [speculative parsing of HTML](https://html.spec.wha
 
  * Pages that do not have any resources declared in the HTML.
  * Large HTML pages with minimal or no resource loads that could explicitly control preloading resources via other preload mechanisms available.
- * Pages that have privacy concerns around resource loads during the speculative fetch phase.
 
-This proposal introduces a [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) `Expect-No-Embedded-Resources` to explicitly state to the User Agent that it may choose to optimize out the time spent in such sub resource determination.
+This proposal introduces a [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) `expect-no-embedded-resources` to explicitly state to the User Agent that it may choose to optimize out the time spent in such sub resource determination.
 
 ## Example
 
-A document can hint to the user agent that it may assume no resources are embedded within the response html markup, by using the `Expect-No-Embedded-Resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/).
+A document can hint to the user agent that it may assume no resources are embedded within the response html markup, by using the `expect-no-embedded-resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/).
 
 
 ```http
 HTTP/1.1 200 OK
 Content-Type: text/html
 ...
-Document-Policy: Expect-No-Embedded-Resources
+Document-Policy: expect-no-embedded-resources
 ...
 ```
 
@@ -78,7 +77,7 @@ resource fetches by reducing the time spent towards speculative parsing.
 
 The specification for this feature in itself consists of two parts.
 
-One part is header parsing, which relies on the [configuration point](https://wicg.github.io/document-policy#configuration-point) defined in [Document Policy](https://wicg.github.io/document-policy/ and the associated infrastructure to read the configuration point. The other is altering behavior of the [active HTML speculative parser](https://html.spec.whatwg.org/multipage/parsing.html#active-speculative-html-parser), which would be done by modifying the HTML Standard's [Speculative HTML parsing](https://html.spec.whatwg.org/multipage/parsing.html#speculative-html-parsing).
+One part is header parsing, which relies on the [configuration point](https://wicg.github.io/document-policy#configuration-point) defined in [Document Policy](https://wicg.github.io/document-policy/) and the associated infrastructure to read the configuration point. The other is altering behavior of the [active HTML speculative parser](https://html.spec.whatwg.org/multipage/parsing.html#active-speculative-html-parser), which would be done by modifying the HTML Standard's [Speculative HTML parsing](https://html.spec.whatwg.org/multipage/parsing.html#speculative-html-parsing).
 
 Please see the associated [spec proposal](https://explainers-by-googlers.github.io/expect-no-embedded-resources) for more information.
 
@@ -86,7 +85,7 @@ Please see the associated [spec proposal](https://explainers-by-googlers.github.
 
 ### A header that controls speculative parsing behavior more directly
 
-An [earlier version of the proposal](https://explainers-by-googlers.github.io/prefer-no-speculative-parsing/) attempted to control the speculative parsing behavior more directly via `Prefer-No-Speculative-Parsing` HTTP headder, and has been [presented](https://docs.google.com/presentation/d/1_nUMkuV3BiARAmwxSLTxuWiFDCY4YeiZ7gxhcCvnCK4/edit#slide=id.g2837c21dc0e_0_0) at the W3C Web Performance Working Group. The forum [discussed and concluded](https://docs.google.com/document/d/1UtBJA6fQa_8dp2pQCQh_7Fg-snwQKq-A298i-jD0_FI/edit#heading=h.25qe0lsli821) that a hint or declaration by the document as part of the existing [Document-Policy header](https://wicg.github.io/document-policy) is a more sound solution that allows for future optimizations as well.
+An [earlier version of the proposal](https://explainers-by-googlers.github.io/prefer-no-speculative-parsing/) attempted to control the speculative parsing behavior more directly via `Prefer-No-Speculative-Parsing` HTTP header, and has been [presented](https://docs.google.com/presentation/d/1_nUMkuV3BiARAmwxSLTxuWiFDCY4YeiZ7gxhcCvnCK4/edit#slide=id.g2837c21dc0e_0_0) at the W3C Web Performance Working Group. The forum [discussed and concluded](https://docs.google.com/document/d/1UtBJA6fQa_8dp2pQCQh_7Fg-snwQKq-A298i-jD0_FI/edit#heading=h.25qe0lsli821) that a hint or declaration by the document as part of the existing [Document-Policy header](https://wicg.github.io/document-policy) is a more sound solution that allows for future optimizations as well.
 
 ### A `<meta>` tag version
 
