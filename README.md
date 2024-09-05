@@ -1,177 +1,104 @@
-# Explainer for the TODO API
+# `Expect-No-Embedded-Resources` explainer
 
-**Instructions for the explainer author: Search for "todo" in this repository and update all the
-instances as appropriate. For the instances in `index.bs`, update the repository name, but you can
-leave the rest until you start the specification. Then delete the TODOs and this block of text.**
-
-This proposal is an early design sketch by [TODO: team] to describe the problem below and solicit
-feedback on the proposed solution. It has not been approved to ship in Chrome.
-
-TODO: Fill in the whole explainer template below using https://tag.w3.org/explainers/ as a
-reference. Look for [brackets].
-
-## Proponents
-
-- [Proponent team 1]
-- [Proponent team 2]
-- [etc.]
+The `Expect-No-Embedded-Resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) allows a document to hint to the user agent to better optimize its loading sequence, such as not using the default speculative parsing behavior.
 
 ## Participate
-- https://github.com/explainers-by-googlers/[your-repository-name]/issues
-- [Discussion forum]
+- https://github.com/explainers-by-googlers/expect-no-embedded-resources/issues
 
-## Table of Contents [if the explainer is longer than one printed page]
+## Table of Contents
 
 <!-- Update this table of contents by running `npx doctoc README.md` -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [Introduction](#introduction)
-- [Goals](#goals)
-- [Non-goals](#non-goals)
-- [User research](#user-research)
-- [Use cases](#use-cases)
-  - [Use case 1](#use-case-1)
-  - [Use case 2](#use-case-2)
-- [[Potential Solution]](#potential-solution)
-  - [How this solution would solve the use cases](#how-this-solution-would-solve-the-use-cases)
-    - [Use case 1](#use-case-1-1)
-    - [Use case 2](#use-case-2-1)
-- [Detailed design discussion](#detailed-design-discussion)
-  - [[Tricky design choice #1]](#tricky-design-choice-1)
-  - [[Tricky design choice 2]](#tricky-design-choice-2)
-- [Considered alternatives](#considered-alternatives)
-  - [[Alternative 1]](#alternative-1)
-  - [[Alternative 2]](#alternative-2)
-- [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
-- [References & acknowledgements](#references--acknowledgements)
+- [`Expect-No-Embedded-Resources` explainer](#expect-no-embedded-resources-explainer)
+  - [Participate](#participate)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Example](#example)
+  - [Goals](#goals)
+  - [Non-goals](#non-goals)
+  - [User research](#user-research)
+  - [Specification plan](#specification-plan)
+  - [Considered alternatives](#considered-alternatives)
+    - [A header that controls speculative parsing behavior more directly](#a-header-that-controls-speculative-parsing-behavior-more-directly)
+    - [A `<meta>` tag version](#a-meta-tag-version)
+    - [Use of `Content-Security-Policy` meta tag as a work-around](#use-of-content-security-policy-meta-tag-as-a-work-around)
+  - [References \& acknowledgements](#references--acknowledgements)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
 
-[The "executive summary" or "abstract".
-Explain in a few sentences what the goals of the project are,
-and a brief overview of how the solution works.
-This should be no more than 1-2 paragraphs.]
+User Agents have implemented [speculative parsing of HTML](https://html.spec.whatwg.org/multipage/parsing.html#speculative-html-parsing) to speculatively fetch resources that are present in the HTML markup, to speed up page loading. For the vast majority of pages on the Web that have resources declared in the HTML markup, the optimization is beneficial and the cost paid in determining such resources is a sound tradeoff. However, the following scenarios might result in a sub-optimal performance tradeoff vs. the explicit time spent parsing HTML for determining sub resources to fetch:
+
+ * Pages that do not have any resources declared in the HTML.
+ * Large HTML pages with minimal or no resource loads that could explicitly control preloading resources via other preload mechanisms available.
+ * Pages that have privacy concerns around resource loads during the speculative fetch phase.
+
+This proposal introduces a [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/) `Expect-No-Embedded-Resources` to explicitly state to the User Agent that it may choose to optimize out the time spent in such sub resource determination.
+
+## Example
+
+A document can hint to the user agent that it may assume no resources are embedded within the response html markup, by using the `Expect-No-Embedded-Resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/).
+
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html
+...
+Document-Policy: Expect-No-Embedded-Resources
+...
+```
+
+In terms of observable effects, this means that any fetches originating from speculative HTML parser may be avoided and any time spent in speculative parsing may be reduced. Resources that were being fetched as part of a speculative fetch, will then be fetched as part of the normal document parsing. Behind the scenes, this preference can allow user agents to skip the time spent in speculative parsing, and deallocate any implementation specific resources corresponding to speculative parsing for additional efficiency. User agents may employ additional optimizations in future based on the hint.
+
 
 ## Goals
 
-[What is the **end-user need** which this project aims to address? Make this section short, and
-elaborate in the Use cases section.]
+ * Allow well informed web developers to assist User Agents to optimize loading sequence better, resulting in a more performant scenario.
+ * Allow opting-in per HTTP response, creating a very targeted and declarative signal that reduces misuse.
+ * Allow User Agents to determine if they should heed to the hint, preventing any binding contracts that prevent future optimization of the speculating parser and prefetch implementation.
 
 ## Non-goals
 
-[If there are "adjacent" goals which may appear to be in scope but aren't,
-enumerate them here. This section may be fleshed out as your design progresses and you encounter necessary technical and other trade-offs.]
+ * Generalize the header to signal more than the intended hint.
+ * Allow explicit control of the speculative parsing or preloading scanning mechanism — it’s better this is designed as a hint that a response is supplied with, on which the UA may choose to vary its usage of speculative parsing on.
 
 ## User research
 
-[If any user research has been conducted to inform your design choices,
-discuss the process and findings. User research should be more common than it is.]
+An Origin Trial was conducted in Chrome from 125 to 130 that allowed participants to disable the default speculative prefetch behavior of the user agent. More information about the Origin Trial can be found on the [Chrome Platform Status page for the Skip Preload Scanning Feature](https://chromestatus.com/feature/5190976638550016) and the [explainer document](https://docs.google.com/document/d/1wiaTL5TeONTZamycMVMjo76nMcbhHNYznQy7I_zCVRY/edit).
 
-## Use cases
+Additional comments and usecases from the community were received on the [tracker issue](https://issues.chromium.org/issues/330802493) that influenced the design of this header.
 
-[Describe in detail what problems end-users are facing, which this project is trying to solve. A
-common mistake in this section is to take a web developer's or server operator's perspective, which
-makes reviewers worry that the proposal will violate [RFC 8890, The Internet is for End
-Users](https://www.rfc-editor.org/rfc/rfc8890).]
+Participants observed improved performance on pages that do not have external
+resource fetches by reducing the time spent towards speculative parsing.
 
-### Use case 1
+## Specification plan
 
-### Use case 2
+The specification for this feature in itself consists of two parts.
 
-<!-- In your initial explainer, you shouldn't be attached or appear attached to any of the potential
-solutions you describe below this. -->
+One part is header parsing, which relies on the [configuration point](https://wicg.github.io/document-policy#configuration-point) defined in [Document Policy](https://wicg.github.io/document-policy/ and the associated infrastructure to read the configuration point. The other is altering behavior of the [active HTML speculative parser](https://html.spec.whatwg.org/multipage/parsing.html#active-speculative-html-parser), which would be done by modifying the HTML Standard's [Speculative HTML parsing](https://html.spec.whatwg.org/multipage/parsing.html#speculative-html-parsing).
 
-## [Potential Solution]
-
-[For each related element of the proposed solution - be it an additional JS method, a new object, a new element, a new concept etc., create a section which briefly describes it.]
-
-```js
-// Provide example code - not IDL - demonstrating the design of the feature.
-
-// If this API can be used on its own to address a user need,
-// link it back to one of the scenarios in the goals section.
-
-// If you need to show how to get the feature set up
-// (initialized, or using permissions, etc.), include that too.
-```
-
-[Where necessary, provide links to longer explanations of the relevant pre-existing concepts and API.
-If there is no suitable external documentation, you might like to provide supplementary information as an appendix in this document, and provide an internal link where appropriate.]
-
-[If this is already specced, link to the relevant section of the spec.]
-
-[If spec work is in progress, link to the PR or draft of the spec.]
-
-[If you have more potential solutions in mind, add ## Potential Solution 2, 3, etc. sections.]
-
-### How this solution would solve the use cases
-
-[If there are a suite of interacting APIs, show how they work together to solve the use cases described.]
-
-#### Use case 1
-
-[Description of the end-user scenario]
-
-```js
-// Sample code demonstrating how to use these APIs to address that scenario.
-```
-
-#### Use case 2
-
-[etc.]
-
-## Detailed design discussion
-
-### [Tricky design choice #1]
-
-[Talk through the tradeoffs in coming to the specific design point you want to make.]
-
-```js
-// Illustrated with example code.
-```
-
-[This may be an open question,
-in which case you should link to any active discussion threads.]
-
-### [Tricky design choice 2]
-
-[etc.]
+Please see the associated [spec proposal](https://explainers-by-googlers.github.io/expect-no-embedded-resources) for more information.
 
 ## Considered alternatives
 
-[This should include as many alternatives as you can,
-from high level architectural decisions down to alternative naming choices.]
+### A header that controls speculative parsing behavior more directly
 
-### [Alternative 1]
+An [earlier version of the proposal](https://explainers-by-googlers.github.io/prefer-no-speculative-parsing/) attempted to control the speculative parsing behavior more directly via `Prefer-No-Speculative-Parsing` HTTP headder, and has been [presented](https://docs.google.com/presentation/d/1_nUMkuV3BiARAmwxSLTxuWiFDCY4YeiZ7gxhcCvnCK4/edit#slide=id.g2837c21dc0e_0_0) at the W3C Web Performance Working Group. The forum [discussed and concluded](https://docs.google.com/document/d/1UtBJA6fQa_8dp2pQCQh_7Fg-snwQKq-A298i-jD0_FI/edit#heading=h.25qe0lsli821) that a hint or declaration by the document as part of the existing [Document-Policy header](https://wicg.github.io/document-policy) is a more sound solution that allows for future optimizations as well.
 
-[Describe an alternative which was considered,
-and why you decided against it.]
+### A `<meta>` tag version
 
-### [Alternative 2]
+While a `meta` element is in some cases easier for web developers to add to their page than a header, it would make the behavior of such a directive unpredictable. It will also add further complexity in determining how such a directive would work given the placement and timing of itself against resources specified in the HTML. This option has been considered and rejected.
 
-[etc.]
+### Use of `Content-Security-Policy` meta tag as a work-around
 
-## Stakeholder Feedback / Opposition
-
-[Implementors and other stakeholders may already have publicly stated positions on this work. If you can, list them here with links to evidence as appropriate.]
-
-- [Implementor A] : Positive
-- [Stakeholder B] : No signals
-- [Implementor C] : Negative
-
-[If appropriate, explain the reasons given by other implementors for their concerns.]
+Some user agents may choose to disable active speculative HTML parser partly or completely on encountering a CSP meta tag. A more direct hint from the page is a more precise signal vs. overloading of the CSP header for implicit disabling of active speculative HTML parser.
 
 ## References & acknowledgements
 
-[Your design will change and be informed by many people; acknowledge them in an ongoing way! It helps build community and, as we only get by through the contributions of many, is only fair.]
-
-[Unless you have a specific reason not to, these should be in alphabetical order.]
-
 Many thanks for valuable feedback and advice from:
 
-- [Person 1]
-- [Person 2]
-- [etc.]
+- Domenic Denicola
+- Yoav Weiss
