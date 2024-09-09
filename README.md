@@ -39,7 +39,7 @@ This proposal introduces a [configuration point](https://wicg.github.io/document
 
 ## Example
 
-A document can hint to the user agent that it may assume no resources are embedded within the response html markup, by using the `expect-no-linked-resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/).
+A document can hint to the user agent that it may assume no resources are linked within the response html markup, by using the `expect-no-linked-resources` [configuration point](https://wicg.github.io/document-policy#configuration-point) in [Document Policy](https://wicg.github.io/document-policy/).
 
 
 ```http
