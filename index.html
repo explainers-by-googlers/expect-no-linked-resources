@@ -2,13 +2,13 @@
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>expect-no-embedded-resources</title>
+  <title>expect-no-linked-resources</title>
   <meta content="w3c/UD" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 6270e4735, updated Tue Aug 6 12:12:30 2024 -0700" name="generator">
-  <link href="https://explainers-by-googlers.github.io/expect-no-embedded-resources" rel="canonical">
+  <link href="https://explainers-by-googlers.github.io/expect-no-linked-resources" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="a358b129346de4167c142fcf6f701eec32a0604c" name="revision">
+  <meta content="019b3791def217368c0e4bb959fdec355651d2d2" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -706,16 +706,16 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
-   <h1 class="p-name no-ref" id="title">expect-no-embedded-resources</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-09-05">5 September 2024</time></p>
+   <h1 class="p-name no-ref" id="title">expect-no-linked-resources</h1>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-09-09">9 September 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
      <dl>
       <dt>This version:
-      <dd><a class="u-url" href="https://explainers-by-googlers.github.io/expect-no-embedded-resources">https://explainers-by-googlers.github.io/expect-no-embedded-resources</a>
+      <dd><a class="u-url" href="https://explainers-by-googlers.github.io/expect-no-linked-resources">https://explainers-by-googlers.github.io/expect-no-linked-resources</a>
       <dt>Issue Tracking:
-      <dd><a href="https://github.com/explainers-by-googlers/expect-no-embedded-resources/issues/">GitHub</a>
+      <dd><a href="https://github.com/explainers-by-googlers/expect-no-linked-resources/issues/">GitHub</a>
       <dt class="editor">Editor:
       <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:alexnj@google.com">Alex N. Jose</a> (<a class="p-org org" href="https://google.com">Google LLC</a>)
      </dl>
@@ -727,7 +727,7 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>The <code>expect-no-embedded-resources</code> <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a> allows a developer to hint the user agent to optimize loading behavior assuming the HTML response has no resources embedded within its markup.</p>
+   <p>The <code>expect-no-linked-resources</code> <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a> allows a developer to hint the user agent to optimize loading behavior assuming the HTML response has no resources embedded within its markup.</p>
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
@@ -759,13 +759,13 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
-   <p>A document can hint the user agent that its HTML markup has no resources embedded to allow the user agent to better optimize the loading sequence, such as not using the default speculative parsing behavior, by using the <code>expect-no-embedded-resources</code> <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a>.</p>
+   <p>A document can hint the user agent that its HTML markup has no resources embedded to allow the user agent to better optimize the loading sequence, such as not using the default speculative parsing behavior, by using the <code>expect-no-linked-resources</code> <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a>.</p>
    <p>The consequence of using this header may be that a user agent would skip certain optimizations such as the Document’s <a href="https://html.spec.whatwg.org/multipage/parsing.html#active-speculative-html-parser">active speculative HTML parser</a> that attempts to find resources embedded in HTML.</p>
    <h2 class="heading settled" data-level="2" id="document-policy-integration"><span class="secno">2. </span><span class="content">Document-Policy Integration</span><a class="self-link" href="#document-policy-integration"></a></h2>
-   <p>This specification defines a <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a> with name "expect-no-embedded-resources". Its <a href="https://wicg.github.io/document-policy#configuration-point-type">type</a> is <code>boolean</code> with <a href="https://wicg.github.io/document-policy#configuration-point-default-value">default value</a> <code>false</code>.</p>
-   <div class="example" id="example-5d3729f7">
-    <a class="self-link" href="#example-5d3729f7"></a> 
-<pre>Document-Policy: expect-no-embedded-resources
+   <p>This specification defines a <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> in <a data-link-type="biblio" href="#biblio-document-policy" title="Document Policy">Document Policy</a> with name "expect-no-linked-resources". Its <a href="https://wicg.github.io/document-policy#configuration-point-type">type</a> is <code>boolean</code> with <a href="https://wicg.github.io/document-policy#configuration-point-default-value">default value</a> <code>false</code>.</p>
+   <div class="example" id="example-eba2ca30">
+    <a class="self-link" href="#example-eba2ca30"></a> 
+<pre>Document-Policy: expect-no-linked-resources
 </pre>
    </div>
    <h2 class="heading settled" data-level="3" id="modifications-html-speculative-parsing"><span class="secno">3. </span><span class="content">Modifications to HTML’s Speculative HTML parsing</span><a class="self-link" href="#modifications-html-speculative-parsing"></a></h2>
@@ -774,7 +774,7 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
      <p>Insert a step after step 1 of <a href="https://html.spec.whatwg.org/#start-the-speculative-html-parser">start the speculative HTML parser</a> as following:</p>
      <ol>
       <li data-md>
-       <p><a href="https://wicg.github.io/document-policy#algo-get-policy-value">Get the document policy value</a> of the "expect-no-embedded-resources" <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> for the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">Document</a>. If the result is <code>true</code>, then the user agent may return.</p>
+       <p><a href="https://wicg.github.io/document-policy#algo-get-policy-value">Get the document policy value</a> of the "expect-no-linked-resources" <a href="https://wicg.github.io/document-policy#configuration-point">configuration point</a> for the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">Document</a>. If the result is <code>true</code>, then the user agent may return.</p>
      </ol>
    </ol>
   </main>
