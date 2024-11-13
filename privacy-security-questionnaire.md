@@ -28,7 +28,7 @@ No. The feature does not deal with sensitive information.
 > 05.  Does data exposed by your specification carry related but distinct
 >      information that may not be obvious to users?
 
-Yes. The specification carries related information about the page, specifically if there are linked resources to be expected in the requested page, as a Document-Policy header in the response header, which will not be obvious to users.
+This feature does not allow users to share data with origins.
 
 > 06.  Do the features in your specification introduce state
 >      that persists across browsing sessions?
@@ -88,10 +88,22 @@ No. The feature in the specification does not have any security or privacy impac
 
 No.
 
-| 2.17. How does your feature handle non-"fully active" documents?
+> 18.  What happens when a document that uses your feature is kept alive in BFCache
+>      (instead of getting destroyed) after navigation, and potentially gets reused
+>      on future navigations back to the document?
 
-Not applicable. The feature only impacts initial document parsing. It does not interact with anything afterwards.
+Nothing. The feature is only used during initial document processing.
 
-| 2.18. What should this questionnaire have asked?
+> 19.  What happens when a document that uses your feature gets disconnected?
 
-None.
+Nothing. The feature is only used during initial document processing.
+
+> 20.  Does your feature allow sites to learn about the users use of assistive technology?
+>
+
+No.
+
+> 21.  What should this questionnaire have asked?
+>
+
+Nothing else that comes to mind.
